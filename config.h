@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* Constants */
-#define BROWSER "google-chrome-stable"
+#define BROWSER "brave"
 #define NOTE "notion-app"
 
 /* appearance */
@@ -25,6 +25,21 @@ static char *colors[][3] = {
        [SchemeSel]  = { selfgcolor,  selbgcolor,  selbordercolor  },
 };
 
+/* scratchpads */
+typedef struct {
+	const char *name;
+	const void *cmd;
+} Sp;
+const char *spcmd1[] = {"st", "-n", "spterm", "-g", "120x34", NULL };
+const char *spcmd2[] = {"st", "-n", "spfm", "-g", "144x41", "-e", "ranger", NULL };
+const char *spcmd3[] = {"st", "-n", "spterm2", "-g", "120x34", "-e", "bc", NULL };
+static Sp scratchpads[] = {
+	/* name          cmd  */
+	{"spterm",      spcmd1},
+	{"spranger",    spcmd2},
+	{"spterm2",   spcmd3},
+};
+
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
@@ -35,11 +50,14 @@ static const Rule rules[] = {
 	 */
 	/* class                instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
 	{ "TelegramDesktop",    NULL,     NULL,           0,         1,          0,           0,        -1 },
-	{ "obs",                NULL,     NULL,           0,         1,          0,           0,        -1 },
+	{ "obs",                NULL,     NULL,           0,         1,          0,           0,        -1 }, 
 	{ "Lutris",             NULL,     NULL,           0,         1,          0,           0,        -1 },
 	{ "discord",   					NULL,     NULL,           1 << 8,    1,          0,          -1,        -1 },
 	{ "St",                 NULL,     NULL,           0,         0,          1,           0,        -1 },
 	{ NULL,                 NULL,     "Event Tester", 0,         0,          0,           1,        -1 }, /* xev */
+	{ NULL,		 	"spterm",				NULL,		SPTAG(0),	  1,			 -1 },
+	{ NULL,		  "spfm",					NULL,		SPTAG(1),		1,			 -1 },
+	{ NULL,		  "spterm2",			NULL,		SPTAG(2),		0,			 -1 },
 };
 
 /* layout(s) */
@@ -52,6 +70,8 @@ static const Layout layouts[] = {
 	{ "[]=",      tile },    /* first entry is default */
 	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
+	{ "|M|",      centeredmaster },
+	{ ">M>",      centeredfloatingmaster },
 };
 
 /* key definitions */
@@ -84,6 +104,8 @@ static Key keys[] = {
 	{ MODKEY,                       XK_w,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                       XK_e,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_r,      setlayout,      {.v = &layouts[2]} },
+	{ MODKEY|ShiftMask,             XK_u,      setlayout,      {.v = &layouts[3]} },
+	{ MODKEY|ShiftMask,             XK_o,      setlayout,      {.v = &layouts[4]} },
 	{ MODKEY|ShiftMask,             XK_r,  	   togglefloating, {0} },
 	{ MODKEY,                       XK_t,  	   setlayout,      {0} },
 	{ MODKEY,                       XK_space,  spawn,          {.v = dmenucmd } },
@@ -101,6 +123,9 @@ static Key keys[] = {
 	{ MODKEY,                       XK_F5,     xrdb,           {.v = NULL } },
 	{ MODKEY,												XK_b,			 spawn,				   {.v = (const char*[]){ BROWSER, NULL } } },
 	{ MODKEY,												XK_F1,		 spawn,				   {.v = (const char*[]){ NOTE, NULL } } },
+	{ MODKEY,            						XK_y,  	   togglescratch,  {.ui = 0 } },
+	{ MODKEY,            						XK_u,	   	 togglescratch,  {.ui = 1 } },
+	{ MODKEY,            						XK_x,	   	 togglescratch,  {.ui = 2 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
